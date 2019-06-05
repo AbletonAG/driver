@@ -1402,7 +1402,10 @@ static void wilc_wlan_power(struct wilc *wilc, int power)
 
 	gpio_reset = gpiod_get(wilc->dt_dev, "reset", GPIOD_ASIS);
 	if (IS_ERR(gpio_reset)) {
-		dev_warn(wilc->dev, "failed to get Reset GPIO, try default\r\n");
+		if(PTR_ERR(gpio_reset) == -EBUSY )
+			dev_warn(wilc->dev, "reset gpio is busy GPIO, try default\r\n");
+		else
+			dev_warn(wilc->dev, "failed to get Reset GPIO, try default\r\n");
 		gpio_reset = gpio_to_desc(GPIO_NUM_RESET);
 		if (!gpio_reset) {
 			dev_warn(wilc->dev,
@@ -1415,6 +1418,10 @@ static void wilc_wlan_power(struct wilc *wilc, int power)
 
 	gpio_chip_en = gpiod_get(wilc->dt_dev, "chip_en", GPIOD_ASIS);
 	if (IS_ERR(gpio_chip_en)) {
+		if(PTR_ERR(gpio_chip_en) == -EBUSY )
+			dev_warn(wilc->dev, "chip_en gpio is busy GPIO, try default\r\n");
+		else
+			dev_warn(wilc->dev, "failed to get chip_en GPIO, try default\r\n");
 		gpio_chip_en = gpio_to_desc(GPIO_NUM_CHIP_EN);
 		if (!gpio_chip_en) {
 			dev_warn(wilc->dev,
